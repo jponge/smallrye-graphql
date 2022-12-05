@@ -5,7 +5,6 @@ import java.io.StringReader;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.Flow.Subscriber;
 import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -16,6 +15,7 @@ import jakarta.json.JsonObject;
 import jakarta.json.stream.JsonParsingException;
 
 import org.jboss.logging.Logger;
+import org.reactivestreams.Publisher;
 
 import graphql.ExecutionResult;
 import io.smallrye.graphql.execution.ExecutionResponse;
@@ -24,6 +24,7 @@ import io.smallrye.graphql.execution.ExecutionService;
 import io.smallrye.graphql.spi.LookupService;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.subscription.Cancellable;
+import mutiny.zero.flow.adapters.AdaptersToReactiveStreams;
 
 public abstract class AbstractGraphQLWebsocketHandler implements GraphQLWebsocketHandler {
     // TODO: Replace with prepared log messages
@@ -112,7 +113,7 @@ public abstract class AbstractGraphQLWebsocketHandler implements GraphQLWebsocke
                                     // this means the operation is a query or mutation
                                     // only send the response if the operation hasn't been cancelled
                                     sendSingleMessage(operationId, executionResponse);
-                                } else if (data instanceof Publisher) {
+                                } else if (data instanceof org.reactivestreams.Publisher) {
                                     // this means the operation is a subscription
                                     sendStreamingMessage(operationId, executionResponse);
                                 } else {
@@ -189,7 +190,7 @@ public abstract class AbstractGraphQLWebsocketHandler implements GraphQLWebsocke
             // this is actually a subscription, so replace the `activeOperation` entry
             // with the actual subscriber
             activeOperations.put(operationId, subscriber);
-            stream.subscribe(subscriber);
+            stream.subscribe(AdaptersToReactiveStreams.subscriber(subscriber));
         }
 
     }

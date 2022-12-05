@@ -15,6 +15,7 @@ import io.smallrye.graphql.schema.model.Type;
 import io.smallrye.graphql.transformation.AbstractDataFetcherException;
 import io.smallrye.mutiny.Multi;
 import io.smallrye.mutiny.infrastructure.Infrastructure;
+import mutiny.zero.flow.adapters.AdaptersToReactiveStreams;
 
 /**
  * Handle Stream calls with Multi, used as base for Multi and Publisher
@@ -39,7 +40,7 @@ public abstract class AbstractStreamingDataFetcher<K, T> extends AbstractDataFet
 
         Multi<?> multi = handleUserMethodCall(dfe, transformedArguments);
 
-        return (O) multi
+        return (O) AdaptersToReactiveStreams.publisher(multi
                 .onItem().transform((t) -> {
                     try {
                         Object resultFromTransform = fieldHelper.transformOrAdaptResponse(t, dfe);
@@ -68,7 +69,7 @@ public abstract class AbstractStreamingDataFetcher<K, T> extends AbstractDataFet
                         }
                         return (O) resultBuilder.build();
                     }
-                });
+                }));
 
     }
 
