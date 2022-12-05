@@ -28,6 +28,10 @@ public interface DataFetcherService {
         return null;
     }
 
+    default PlugableBatchableDataFetcher getFlowPublisherDataFetcher(Operation operation, Type type) {
+        return null;
+    }
+
     default PlugableBatchableDataFetcher getMultiDataFetcher(Operation operation, Type type) {
         return null;
     }

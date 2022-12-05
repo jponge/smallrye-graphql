@@ -1,11 +1,11 @@
 package io.smallrye.graphql.test.apps.subscription.api;
 
 import java.util.List;
+import java.util.concurrent.Flow.Publisher;
 
 import org.eclipse.microprofile.graphql.Description;
 import org.eclipse.microprofile.graphql.GraphQLApi;
 import org.eclipse.microprofile.graphql.Query;
-import org.reactivestreams.Publisher;
 
 import io.smallrye.graphql.api.Subscription;
 import io.smallrye.mutiny.Multi;

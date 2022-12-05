@@ -1,8 +1,7 @@
 package io.smallrye.graphql.execution.datafetcher;
 
 import java.util.List;
-
-import org.reactivestreams.Publisher;
+import java.util.concurrent.Flow.Publisher;
 
 import graphql.schema.DataFetchingEnvironment;
 import io.smallrye.graphql.schema.model.Operation;

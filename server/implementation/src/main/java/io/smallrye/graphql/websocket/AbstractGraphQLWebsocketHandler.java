@@ -5,6 +5,9 @@ import java.io.StringReader;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Flow.Publisher;
+import java.util.concurrent.Flow.Subscriber;
+import java.util.concurrent.Flow.Subscription;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -13,9 +16,6 @@ import jakarta.json.JsonObject;
 import jakarta.json.stream.JsonParsingException;
 
 import org.jboss.logging.Logger;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 
 import graphql.ExecutionResult;
 import io.smallrye.graphql.execution.ExecutionResponse;

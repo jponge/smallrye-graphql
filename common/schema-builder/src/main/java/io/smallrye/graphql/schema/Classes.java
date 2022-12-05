@@ -37,6 +37,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.Flow;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -154,7 +155,8 @@ public class Classes {
                 || type.name().equals(COMPLETION_STAGE)
                 || type.name().equals(UNI)
                 || type.name().equals(MULTI)
-                || type.name().equals(PUBLISHER);
+                || type.name().equals(PUBLISHER)
+                || type.name().equals(FLOW_PUBLISHER);
     }
 
     /**
@@ -265,6 +267,8 @@ public class Classes {
     private static final DotName MULTI = DotName.createSimple("io.smallrye.mutiny.Multi");
     @Deprecated
     private static final DotName PUBLISHER = DotName.createSimple("org.reactivestreams.Publisher");
+    @Deprecated
+    private static final DotName FLOW_PUBLISHER = DotName.createSimple(Flow.Publisher.class);
 
     public static final DotName SERIALIZABLE = DotName.createSimple(Serializable.class.getName());
     public static final DotName OBJECT = DotName.createSimple(Object.class.getName());

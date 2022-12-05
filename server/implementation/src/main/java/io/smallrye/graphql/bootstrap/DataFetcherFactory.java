@@ -1,30 +1,14 @@
 package io.smallrye.graphql.bootstrap;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import org.dataloader.BatchLoaderWithContext;
 
 import graphql.schema.DataFetcher;
-import io.smallrye.graphql.execution.datafetcher.CompletionStageDataFetcher;
-import io.smallrye.graphql.execution.datafetcher.DefaultDataFetcher;
-import io.smallrye.graphql.execution.datafetcher.FieldDataFetcher;
-import io.smallrye.graphql.execution.datafetcher.MultiDataFetcher;
-import io.smallrye.graphql.execution.datafetcher.PlugableBatchableDataFetcher;
-import io.smallrye.graphql.execution.datafetcher.PlugableDataFetcher;
-import io.smallrye.graphql.execution.datafetcher.PublisherDataFetcher;
-import io.smallrye.graphql.execution.datafetcher.UniDataFetcher;
-import io.smallrye.graphql.schema.model.Field;
-import io.smallrye.graphql.schema.model.Operation;
-import io.smallrye.graphql.schema.model.Reference;
-import io.smallrye.graphql.schema.model.Type;
-import io.smallrye.graphql.schema.model.Wrapper;
+import io.smallrye.graphql.execution.datafetcher.*;
+import io.smallrye.graphql.schema.model.*;
 import io.smallrye.graphql.spi.DataFetcherService;
 
 /**
@@ -88,10 +72,12 @@ public class DataFetcherFactory {
             return (V) getCompletionStageDataFetcher(operation, type);
         } else if (isMutinyUni(operation)) {
             return (V) getUniDataFetcher(operation, type);
-        } else if (isPublisher(operation)) {
-            return (V) getPublisherDataFetcher(operation, type);
         } else if (isMutinyMulti(operation)) {
             return (V) getMultiDataFetcher(operation, type);
+        } else if (isFlowPublisher(operation)) {
+            return (V) getFlowPublisherDataFetcher(operation, type);
+        } else if (isPublisher(operation)) {
+            return (V) getPublisherDataFetcher(operation, type);
         } else if (isWrapped(operation)) {
             return (V) getOtherWrappedDataFetcher(operation, type);
         }
@@ -126,6 +112,18 @@ public class DataFetcherFactory {
 
         for (DataFetcherService dfe : dataFetcherServices) {
             PlugableBatchableDataFetcher df = dfe.getPublisherDataFetcher(operation, type);
+            if (df != null) {
+                return df;
+            }
+        }
+
+        return new PublisherDataFetcher(operation, type);
+    }
+
+    private PlugableBatchableDataFetcher getFlowPublisherDataFetcher(Operation operation, Type type) {
+
+        for (DataFetcherService dfe : dataFetcherServices) {
+            PlugableBatchableDataFetcher df = dfe.getFlowPublisherDataFetcher(operation, type);
             if (df != null) {
                 return df;
             }
@@ -210,6 +208,14 @@ public class DataFetcherFactory {
         if (field.hasWrapper()) {
             String wrapperClassName = field.getWrapper().getWrapperClassName();
             return wrapperClassName.equals("org.reactivestreams.Publisher");
+        }
+        return false;
+    }
+
+    private boolean isFlowPublisher(Field field) {
+        if (field.hasWrapper()) {
+            String wrapperClassName = field.getWrapper().getWrapperClassName();
+            return wrapperClassName.equals("java.util.concurrent.Flow$Publisher");
         }
         return false;
     }

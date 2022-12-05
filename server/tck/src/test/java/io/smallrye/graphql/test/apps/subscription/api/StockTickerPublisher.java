@@ -9,16 +9,16 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Flow.Publisher;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import org.reactivestreams.Publisher;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.observables.ConnectableObservable;
+import mutiny.zero.flow.adapters.AdaptersToFlow;
 
 public class StockTickerPublisher {
 
@@ -39,11 +39,11 @@ public class StockTickerPublisher {
     }
 
     public Publisher<Stock> getPublisher() {
-        return publisher;
+        return AdaptersToFlow.publisher(publisher);
     }
 
     public Publisher<Stock> getPublisher(List<String> stockCodes) {
-        return publisher.filter(stock -> stockCodes.contains(stock.stockCode));
+        return AdaptersToFlow.publisher(publisher.filter(stock -> stockCodes.contains(stock.stockCode)));
     }
 
     private Runnable newStockTick(ObservableEmitter<Stock> emitter) {
